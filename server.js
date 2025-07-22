@@ -5,29 +5,44 @@ const { MongoClient } = require("mongodb");
 const agendaRoutes = require("./routes/agendaRoutes");
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
+
+// Routes
 app.use("/api/agenda", agendaRoutes);
 
+// Env Variables
 const PORT = process.env.PORT || 5000;
 const uri = process.env.MONGO_URI;
-const client = new MongoClient(uri);
 
-async function run() {
-  try {
-    await client.connect();
-    console.log("✅ Connected to MongoDB");
+// MongoDB Connection
+async function connectDB() {
+	try {
+		const client = new MongoClient(uri, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+			serverSelectionTimeoutMS: 5000, // agar tidak hang lama
+		});
 
-    app.locals.db = client.db("dbdesa"); // Pastikan sesuai dengan nama database
+		await client.connect();
+		console.log("✅ Connected to MongoDB");
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-    });
-  } catch (err) {
-    console.error("❌ Mongo Error:", err);
-  }
+		// Simpan DB instance
+		app.locals.db = client.db("dbdesa"); // Pastikan db name benar
+
+		// Start Server setelah DB siap
+		app.listen(PORT, () => {
+			console.log(`🚀 Server running on port ${PORT}`);
+		});
+	} catch (err) {
+		console.error("❌ MongoDB Connection Error:", err.message);
+		process.exit(1);
+	}
 }
 
-run();
+// Run
+connectDB();
