@@ -19,6 +19,9 @@ app.use("/uploads", express.static("uploads"));
 // Routes
 app.use("/api/agenda", agendaRoutes);
 
+app.get("/", (req, res) => res.send("Backend is running!"));
+
+
 // Env Variables
 const PORT = process.env.PORT || 5000;
 const uri = process.env.MONGO_URI;
