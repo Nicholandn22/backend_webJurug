@@ -9,7 +9,9 @@ const app = express();
 // Middleware
 app.use(
 	cors({
-		origin: ["https://webjurug-frontend.vercel.app"],
+		origin: ["https://frontend-web-jurug.vercel.app"], // Ganti dengan domain Vercel kamu
+		methods: ["GET", "POST", "PUT", "DELETE"],
+		allowedHeaders: ["Content-Type"],
 	})
 );
 app.use(express.json());
@@ -20,7 +22,6 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/agenda", agendaRoutes);
 
 app.get("/", (req, res) => res.send("Backend is running!"));
-
 
 // Env Variables
 const PORT = process.env.PORT || 5000;
